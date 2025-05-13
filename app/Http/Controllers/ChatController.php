@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ChatWithUsersEvent;
 use App\Models\Chat;
 use Illuminate\Http\Request;
 
@@ -17,6 +18,12 @@ class ChatController extends Controller
                 ->where('receiver_id', $request->sender_id);
         })->orderBy('created_at', 'asc')->get();
 
+        try {
+            ChatWithUsersEvent::dispatch($request->receiver_id);
+        } catch (\Throwable $th) {
+            dd($th);
+        }
+
         return $this->json('success', ['chats' => $chats]);
     }
     public function store(Request $request)
@@ -30,6 +37,12 @@ class ChatController extends Controller
             'seen_at' => now(),
             'created_at' => now()
         ]);
+
+        try {
+            ChatWithUsersEvent::dispatch($request->receiver_id);
+        } catch (\Throwable $th) {
+            dd($th);
+        }
 
         return $this->json('success', ['message' => 'Message sent successfully']);
     }

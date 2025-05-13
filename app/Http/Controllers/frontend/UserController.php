@@ -10,7 +10,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
-    public function list()
+    public function list(Request $request)
     {
         $user = Auth::guard('api')->user();
 
@@ -18,7 +18,13 @@ class UserController extends Controller
             return $this->json('error', ['message' => 'Unauthenticated'], 401);
         }
 
-        $users = User::where('id', '!=', $user->id)->get();
+        $users = User::where('id', '!=', $user->id)
+            ->when($request->search, function ($query, $search) {
+                return $query->where('name', 'like', "%{$search}%");
+            })
+            ->get();
+
+
         return $this->json('success', ['users' => $users]);
     }
 }
