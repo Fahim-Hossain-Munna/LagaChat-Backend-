@@ -19,7 +19,7 @@ class ChatController extends Controller
         })->orderBy('created_at', 'asc')->get();
 
         try {
-            ChatWithUsersEvent::dispatch($request->receiver_id);
+            ChatWithUsersEvent::dispatch($request->sender_id);
         } catch (\Throwable $th) {
             dd($th);
         }
@@ -39,7 +39,7 @@ class ChatController extends Controller
         ]);
 
         try {
-            ChatWithUsersEvent::dispatch($request->receiver_id);
+            ChatWithUsersEvent::dispatch($request->sender_id);
         } catch (\Throwable $th) {
             dd($th);
         }
